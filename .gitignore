@@ -1,2 +1,5 @@
 # The virtual environment (see requirements.txt)
 teasales/ 
+
+# Let's not leak our credentials ;)
+praw.ini
