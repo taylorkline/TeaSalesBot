@@ -1,0 +1,31 @@
+{
+   "$schema": "https://json-schema.org/draft-04/schema#",
+   "title": "Vendor list",
+   "type": "array",
+   "minItems": 1,
+   "uniqueItems": true,
+   "items": {
+      "title": "Vendor",
+      "type": "object",
+      "properties": {
+         "name": {
+            "type": "string"
+         },
+         "reddit_username": {
+            "type": "string"
+         },
+         "nicknames": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+               "type": "string"
+            }
+         },
+        "store_url": {
+            "type": "string"
+         }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+   }
+}
