@@ -1,2 +1,4 @@
 # The virtual environment (see requirements.txt)
 teasalesenv/ 
+
+__pycache__/
