@@ -16,8 +16,22 @@ def authenticate():
     return praw.Reddit("teasalesbot")
 
 def load_vendors():
+    """
+    Loads the vendors from the JSON file, turning all keys to lowercase
+    for later string matching.
+    """
     with open("./vendors.json") as vendors:
-        return json.load(vendors)
+        vendors = json.load(vendors)
+
+    for vendor in vendors:
+        for key, val in vendor.items():
+            if key == "nicknames":  # nicknames is a list of strings
+                for i, nickname in enumerate(val):
+                    val[i] = nickname.lower()
+            else:  # everything else is a string
+                vendor[key] = val.lower()
+
+    return vendors
 
 def subscribe(reddit, vendors):
     for comment in reddit.subreddit(monitor_sub).stream.comments():
