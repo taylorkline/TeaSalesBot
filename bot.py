@@ -1,3 +1,4 @@
+import json
 import pdb
 import praw
 
@@ -15,7 +16,8 @@ def authenticate():
     return praw.Reddit("teasalesbot")
 
 def load_vendors():
-    pass
+    with open("./vendors.json") as vendors:
+        return json.load(vendors)
 
 def subscribe(reddit, vendors):
     for comment in reddit.subreddit(monitor_sub).stream.comments():
