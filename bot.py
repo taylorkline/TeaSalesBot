@@ -46,8 +46,30 @@ def get_vendors_mentioned(text, vendors):
     Searches through the text for mentions of any of the possible vendors,
     returning a list of vendors which were mentioned.
     """
-    # TODO: Iterate vendors looking for matches in the text
-    pass
+    text = text.lower()
+    mentioned_vendors = []
+    for vendor in vendors:
+        if vendor["name"] in text:
+            mentioned_vendors.append(vendor)
+            continue
+
+        ru = "reddit_username"
+        if ru in vendor and vendor[ru] in text:
+            mentioned_vendors.append(vendor)
+            continue
+
+        surl = "store_url"
+        if surl in vendor and vendor[surl] in text:
+            mentioned_vendors.append(vendor)
+            continue
+
+        if "nicknames" in vendor:
+            for nickname in vendor["nicknames"]:
+                if nickname in text:
+                    mentioned_vendors.append(vendor)
+                    continue
+
+    return mentioned_vendors
 
 def get_reply(mentions):
     """
