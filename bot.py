@@ -24,13 +24,13 @@ def load_vendors():
         vendors = json.load(vendors)
 
     for vendor in vendors:
+        vendor["pretty_name"] = vendor["name"]
         for key, val in vendor.items():
             if key == "nicknames":  # nicknames is a list of strings
                 for i, nickname in enumerate(val):
                     val[i] = nickname.lower()
             else:  # everything else is a string
                 vendor[key] = val.lower()
-        vendor["pretty_name"] = vendor["name"]
 
     return vendors
 
