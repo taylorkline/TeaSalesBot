@@ -35,11 +35,20 @@ def load_vendors():
 
 def subscribe(reddit, vendors):
     for comment in reddit.subreddit(monitor_sub).stream.comments():
-        # TODO: Ensure we have not already responded to this comment
+        if reddit.config.username == comment.author.name:
+            continue
+
         vendors_mentioned = get_vendors_mentioned(comment.body, vendors)
+
         if vendors_mentioned:
-            reply = get_reply(vendors_mentioned)
-            respond(reddit, comment.id, reply)
+            # Ensure we don't follow-up duplicate times
+            comment.refresh()
+            responders = [reply.author.name for reply in comment.replies.list()]
+            if reddit.config.username in responders:
+                continue
+
+            reply = get_reply(reddit, vendors_mentioned)
+            respond(comment, reply)
 
 def get_vendors_mentioned(text, vendors):
     """
