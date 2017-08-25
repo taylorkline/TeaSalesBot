@@ -101,7 +101,7 @@ def get_reply(reddit, mentions):
             sales = f"No unexpired sales posted to /r/{sales_sub} within the past 30 days"
             rows.append(f"{vendor['pretty_name']}|{sales}")
 
-    footer = "^TeaSalesBot made with 🍵 and ❤️ by /u/taylorkline"
+    footer = "^(TeaSalesBot made with 🍵 and ❤️ by /u/taylorkline)"
     return "\n".join(["\n".join(rows), footer])
 
 def get_recent_sales(reddit, vendor):
