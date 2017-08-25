@@ -29,7 +29,7 @@ def load_vendors():
             if key == "nicknames":  # nicknames is a list of strings
                 for i, nickname in enumerate(val):
                     val[i] = nickname.lower()
-            else:  # everything else is a string
+            elif key != "pretty_name":  # everything else is a string
                 vendor[key] = val.lower()
 
     return vendors
