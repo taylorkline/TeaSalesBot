@@ -46,5 +46,10 @@ class TestBot(unittest.TestCase):
         mentions = bot.get_vendors_mentioned(t, self.vendors)
         self.assertTrue(len(mentions) == 3)
 
+    def test_duplicate_mentions(self):
+        t = "like WhatCha or whatcha or what-cha or what-cha.com?"
+        mentions = bot.get_vendors_mentioned(t, self.vendors)
+        self.assertTrue(len(mentions) == 1)
+
 if __name__ == "__main__":
     unittest.main()
