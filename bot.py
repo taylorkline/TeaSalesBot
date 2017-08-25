@@ -1,11 +1,10 @@
 import json
-import pdb
 import praw
 
 # The subreddit that contains the sales
 sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
-monitor_sub = "teasalesbot"
+monitor_sub = "tea"
 
 def main():
     reddit = authenticate()
@@ -111,7 +110,6 @@ def get_recent_sales(reddit, vendor):
     query = "NOT (flair:expired OR flair:meta)"
 
     terms = []
-    # TODO: Fix search for phrases https://github.com/praw-dev/praw/issues/837
     for k,v in vendor.items():
         if k == "nicknames":
             terms.extend(f"\"{nickname}\"" for nickname in v)
