@@ -5,7 +5,7 @@ import praw
 # The subreddit that contains the sales
 sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
-monitor_sub = "tea"
+monitor_sub = "teasalesbot"
 
 def main():
     reddit = authenticate()
@@ -80,18 +80,57 @@ def get_vendors_mentioned(text, vendors):
 
     return mentioned_vendors
 
-def get_reply(mentions):
+def get_reply(reddit, mentions):
     """
     Creates a table with the appropriate vendor & their sales details.
     Also includes footer with bot information.
     """
-    pass
+    rows = ["vendor|sales",
+            ":--|:--:"]
+    for vendor in mentions:
+        sales = get_recent_sales(reddit, vendor)
+        if sales:
+            for i, sale in enumerate(sales):
+                if i == 0:
+                    sale_info = f"{vendor['name']}|[{sale.title}]({sale.url})"
+                else:
+                    sale_info = f"||[{sale.title}]({sale.url})"
+                rows.append(sale_info)
+        else:
+            sales = f"No unexpired sales posted to /r/{sales_sub} within the past 30 days"
+            rows.append(f"{vendor['name']}|{sales}")
+
+    footer = "^TeaSalesBot made with 🍵 and ❤️ by /u/taylorkline"
+    return "\n".join(["\n".join(rows), footer])
 
 def get_recent_sales(reddit, vendor):
-    pass
+    """
+    Returns the vendor's active sales within the past month, in sorted order by newest sale.
+    """
+    query = "NOT (flair:expired OR flair:meta)"
 
-def respond(reddit, comment_id, reply):
-    pass
+    terms = []
+    # TODO: Fix search for phrases https://github.com/praw-dev/praw/issues/837
+    for k,v in vendor.items():
+        if k == "nicknames":
+            terms.extend(f"\"{nickname}\"" for nickname in v)
+        else:
+            assert(isinstance(v, str))
+            terms.append(f"\"{v}\"")
+
+    terms = " OR ".join(terms)
+    query = " ".join([query, terms])
+    sales = [sale for sale in
+             reddit.subreddit(sales_sub).search(query, sort="new", time_filter="month")]
+    pretty_sales = "\n".join([sale.title for sale in sales])
+
+    print(f"BEGINSALES\nsearch for:\n{query}\nreturned {len(sales)} sales:\n{pretty_sales}\n"
+           "ENDSALES\n")
+
+    return sales
+
+def respond(comment, reply):
+    comment.reply(reply)
 
 if __name__ == "__main__":
     main()
