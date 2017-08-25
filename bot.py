@@ -30,6 +30,7 @@ def load_vendors():
                     val[i] = nickname.lower()
             else:  # everything else is a string
                 vendor[key] = val.lower()
+        vendor["pretty_name"] = vendor["name"]
 
     return vendors
 
@@ -92,13 +93,13 @@ def get_reply(reddit, mentions):
         if sales:
             for i, sale in enumerate(sales):
                 if i == 0:
-                    sale_info = f"{vendor['name']}|[{sale.title}]({sale.url})"
+                    sale_info = f"{vendor['pretty_name']}|[{sale.title}]({sale.url})"
                 else:
                     sale_info = f"||[{sale.title}]({sale.url})"
                 rows.append(sale_info)
         else:
             sales = f"No unexpired sales posted to /r/{sales_sub} within the past 30 days"
-            rows.append(f"{vendor['name']}|{sales}")
+            rows.append(f"{vendor['pretty_name']}|{sales}")
 
     footer = "^TeaSalesBot made with 🍵 and ❤️ by /u/taylorkline"
     return "\n".join(["\n".join(rows), footer])
