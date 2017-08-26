@@ -113,12 +113,16 @@ def get_recent_sales(reddit, vendor):
     query = "NOT (flair:expired OR flair:meta)"
 
     terms = []
-    for k,v in vendor.items():
-        if k == "nicknames":
-            terms.extend(f"\"{nickname}\"" for nickname in v)
-        else:
-            assert(isinstance(v, str))
-            terms.append(f"\"{v}\"")
+    terms.append(create_search_term(vendor["name"]))
+    if "reddit_username" in vendor:
+        ru = vendor["reddit_username"]
+        terms.append(f'author:"{ru}" OR {create_search_term(vendor["reddit_username"])}')
+    if "nicknames" in vendor:
+        for nickname in vendor["nicknames"]:
+            terms.append(create_search_term(vendor["nicknames"]))
+    if "store_url" in vendor:
+        surl = vendor["store_url"]
+        terms.append(f'site:"{surl}" OR {create_search_term(surl)}')
 
     terms = " OR ".join(terms)
     query = " ".join([query, terms])
@@ -130,6 +134,9 @@ def get_recent_sales(reddit, vendor):
            "ENDSALES\n")
 
     return sales
+
+def create_search_term(keyword):
+    return f'selftext:"{keyword}" OR title:"{keyword}"'
 
 def respond(comment, reply):
     comment.reply(reply)
