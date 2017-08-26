@@ -41,14 +41,17 @@ def subscribe(reddit, vendors):
         vendors_mentioned = get_vendors_mentioned(comment.body, vendors)
 
         if vendors_mentioned:
-            # Ensure we don't follow-up duplicate times
-            comment.refresh()
-            responders = [reply.author.name for reply in comment.replies.list()]
-            if reddit.config.username in responders:
-                continue
+            try:
+                # Ensure we don't follow-up duplicate times
+                comment.refresh()
+                responders = [reply.author.name for reply in comment.replies.list()]
+                if reddit.config.username in responders:
+                    continue
 
-            reply = get_reply(reddit, vendors_mentioned)
-            respond(comment, reply)
+                reply = get_reply(reddit, vendors_mentioned)
+                respond(comment, reply)
+            except praw.exceptions.PRAWException as e:
+                print("Unable to respond to comment {comment.id} due to exception:\n{e}")
 
 def get_vendors_mentioned(text, vendors):
     """
