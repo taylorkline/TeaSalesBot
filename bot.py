@@ -4,7 +4,7 @@ import praw
 # The subreddit that contains the sales
 sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
-monitor_sub = "tea"
+monitor_sub = "teasalesbot"
 
 def main():
     reddit = authenticate()
