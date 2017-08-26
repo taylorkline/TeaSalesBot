@@ -1,5 +1,6 @@
 import json
 import praw
+import os
 
 # The subreddit that contains the sales
 sales_sub = "teasales"
@@ -134,7 +135,14 @@ def create_search_term(keyword):
     return f'selftext:"{keyword}" OR title:"{keyword}"'
 
 def respond(comment, reply):
-    comment.reply(reply)
+    reply = comment.reply(reply)
+
+    prefix = "tmp"
+    os.makedirs(f"{prefix}", exist_ok=True)
+    fname = f"{reply.id}.log"
+    with open(f"{prefix}/{fname}", "w") as logfile:
+        logfile.write(reply.body)
+        print(f"Response to comment {comment.id} logged as {fname} in {prefix}/")
 
 if __name__ == "__main__":
     main()
