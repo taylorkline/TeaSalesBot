@@ -19,5 +19,69 @@
       "name": "Yunomi",
       "reddit_username": "yunomitea",
       "store_url": "yunomi.life"
+   },
+   {
+      "name": "Floating Leaves Tea",
+      "reddit_username": "staxpot",
+      "nicknames": ["Floating Leaves"],
+      "store_url": "floatingleavestea.com"
+   },
+   {
+      "name": "Teasenz",
+      "reddit_username": "Teasenz",
+      "store_url": "teasenz.com"
+   },
+   {
+      "name": "Stone Leaf Tea",
+      "reddit_username": "StoneLeafTeahouse",
+      "nicknames": ["StoneLeafTea", "Stone Leaf Teahouse"],
+      "store_url": "stoneleaftea.com"
+   },
+   {
+      "name": "TeaLife.HK",
+      "reddit_username": "tealifehk",
+      "store_url": "tealife.hk"
+   },
+   {
+      "name": "Chayo Tea",
+      "reddit_username": "Jamesteaking",
+      "store_url": "daoistmeditation.com"
+   },
+   {
+      "name": "teabento",
+      "reddit_username": "teabento",
+      "store_url": "teabento.com"
+   },
+   {
+      "name": "Tea Ave",
+      "reddit_username": "teaave",
+      "store_url": "teaave.com"
+   },
+   {
+      "name": "Beautiful Taiwan Tea Co.",
+      "reddit_username": "Pingatu",
+      "nicknames": ["Beautiful Taiwan Tea"],
+      "store_url": "beautifultaiwantea.com"
+   },
+   {
+      "name": "Lost Pines Yaupon",
+      "reddit_username": "LostPinesYauponTea",
+      "nicknames": ["Lost Pines"]
+   },
+   {
+      "name": "Panda Brew Tea",
+      "reddit_username": "PandaBrewTea",
+      "store_url": "pandabrewtea.com"
+   },
+   {
+      "name": "Crimson Lotus Tea",
+      "reddit_username": "puerh_lover",
+      "nicknames": ["Crimson Lotus"],
+      "store_url": "crimsonlotustea.com"
+   },
+   {
+      "name": "White2Tea",
+      "nicknames": ["White 2 Tea"],
+      "store_url": "white2tea.com"
    }
 ]
