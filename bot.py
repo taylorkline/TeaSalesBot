@@ -126,12 +126,7 @@ def get_recent_sales(reddit, vendor):
 
     terms = " OR ".join(terms)
     query = " ".join([query, terms])
-    sales = [sale for sale in
-             reddit.subreddit(sales_sub).search(query, sort="new", time_filter="month")]
-    pretty_sales = "\n".join([sale.title for sale in sales])
-
-    print(f"BEGINSALES\nsearch for:\n{query}\nreturned {len(sales)} sales:\n{pretty_sales}\n"
-           "ENDSALES\n")
+    sales = reddit.subreddit(sales_sub).search(query, sort="new", time_filter="month")
 
     return sales
 
