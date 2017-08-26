@@ -95,10 +95,11 @@ def get_reply(reddit, mentions):
         sales = get_recent_sales(reddit, vendor)
         if sales:
             for i, sale in enumerate(sales):
+                sale_info = f"|[{create_table_safe_reply(sale.title)}]({sale.url})"
                 if i == 0:
-                    sale_info = f"{vendor['pretty_name']}|[{sale.title}]({sale.url})"
+                    sale_info = f"{vendor['pretty_name']}{sale_info}"
                 else:
-                    sale_info = f"||[{sale.title}]({sale.url})"
+                    sale_info = f"|{sale_info}"
                 rows.append(sale_info)
         else:
             sales = f"No unexpired sales posted to /r/{sales_sub} within the past 30 days"
@@ -106,6 +107,9 @@ def get_reply(reddit, mentions):
 
     footer = "^(TeaSalesBot made with 🍵 and ❤️ by) ^[/u\/taylorkline](/user/taylorkline)"
     return "\n".join(["\n".join(rows), footer])
+
+def create_table_safe_reply(reply):
+    return "".join([ch if ch != "|" else "-" for ch in reply])
 
 def get_recent_sales(reddit, vendor):
     """
