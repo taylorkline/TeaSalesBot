@@ -91,7 +91,7 @@ def get_reply(reddit, mentions):
     Also includes footer with bot information.
     Returns a False-y value if none of the mentioned vendors have active sales.
     """
-    rows = ["vendor|sales",
+    rows = ["vendor|sales in /r/TeaSales",
             ":--|:--:"]
     vendors_without_sales = 0
     for vendor in mentions:
