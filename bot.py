@@ -44,9 +44,7 @@ def subscribe(reddit, vendors):
         if vendors_mentioned:
             try:
                 # Ensure we don't follow-up duplicate times
-                comment.refresh()
-                responders = [reply.author.name for reply in comment.replies.list()]
-                if reddit.config.username in responders:
+                if already_responded(comment, reddit.config.username):
                     continue
 
                 reply = get_reply(reddit, vendors_mentioned)
@@ -54,6 +52,25 @@ def subscribe(reddit, vendors):
                     respond(comment, reply)
             except praw.exceptions.PRAWException as e:
                 print("Unable to respond to comment {comment.id} due to exception:\n{e}")
+
+def already_responded(comment, bot_username):
+    """
+    Returns True if we've already responded to this comment or any of its
+    parent comments, False otherwise
+    """
+    ancestor = comment
+    while True:
+        ancestor.refresh()
+        for reply in ancestor.replies:
+            if bot_username == reply.author.name:
+                return True
+
+        if ancestor.is_root:
+            break
+
+        ancestor = ancestor.parent()
+
+    return False
 
 def get_vendors_mentioned(text, vendors):
     """
