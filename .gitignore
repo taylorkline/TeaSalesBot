@@ -1,5 +1,8 @@
 # The virtual environment (see requirements.txt)
 teasalesenv/ 
 
+# The credentials
+praw.ini
+
 __pycache__/
 tmp/
