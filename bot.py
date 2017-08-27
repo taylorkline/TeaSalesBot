@@ -60,6 +60,7 @@ def already_responded(comment, bot_username):
     """
     ancestor = comment
     while True:
+        ancestor.body
         ancestor.refresh()
         for reply in ancestor.replies:
             if bot_username == reply.author.name:
