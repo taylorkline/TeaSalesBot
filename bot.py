@@ -1,6 +1,7 @@
 import json
 import praw
 import os
+import traceback
 
 # The subreddit that contains the sales
 sales_sub = "teasales"
@@ -35,30 +36,61 @@ def load_vendors():
     return vendors
 
 def subscribe(reddit, vendors):
-    for comment in reddit.subreddit(monitor_sub).stream.comments():
-        if reddit.config.username == comment.author.name:
-            continue
+    sub = reddit.subreddit(monitor_sub)
+    streams = [sub.stream.submissions(pause_after=0),
+               sub.stream.comments(pause_after=0)]
 
-        vendors_mentioned = get_vendors_mentioned(comment.body, vendors)
+    stream_idx = 0
+    while True:
+        for item in streams[stream_idx]:
+            if item is None:
+                print("Breaking")
+                break
 
-        if vendors_mentioned:
-            try:
-                # Ensure we don't follow-up duplicate times
-                if already_responded(comment, reddit.config.username):
-                    continue
+            if reddit.config.username == item.author.name:
+                continue
 
-                reply = get_reply(reddit, vendors_mentioned)
-                if reply:
-                    respond(comment, reply)
-            except praw.exceptions.PRAWException as e:
-                print("Unable to respond to comment {comment.id} due to exception:\n{e}")
+            if isinstance(item, praw.models.Submission):
+                search_text = f"{item.title} {item.selftext}"
+            else:
+                search_text = item.body
 
-def already_responded(comment, bot_username):
+            print(search_text)
+
+            vendors_mentioned = get_vendors_mentioned(search_text, vendors)
+
+            if vendors_mentioned:
+                try:
+                    # Ensure we don't follow-up duplicate times
+                    old_id = item.id
+                    if already_responded(item, reddit.config.username):
+                        continue
+                    assert(old_id == item.id)
+
+                    reply = get_reply(reddit, vendors_mentioned)
+                    if reply:
+                        respond(item, reply)
+                except (praw.exceptions.PRAWException, AssertionError) as e:
+                    # TODO: Remove AssertionError catch after resolution of
+                    #       https://github.com/praw-dev/praw/issues/838
+                    print(f"Unable to respond to item {item.id} due to exception:")
+                    print(e)
+                    traceback.print_exc()
+
+        stream_idx = (stream_idx + 1) % len(streams)
+
+def already_responded(comment_or_submission, bot_username):
     """
     Returns True if we've already responded to this comment or any of its
     parent comments, False otherwise
     """
-    ancestor = comment
+    if isinstance(comment_or_submission, praw.models.Submission):
+        for reply in comment_or_submission.comments:
+            if bot_username == reply.author.name:
+                return True
+        return False
+
+    ancestor = comment_or_submission
     while True:
         ancestor.body
         ancestor.refresh()
@@ -162,8 +194,8 @@ def get_recent_sales(reddit, vendor):
 def create_search_term(keyword):
     return f'selftext:"{keyword}" OR title:"{keyword}"'
 
-def respond(comment, reply):
-    reply = comment.reply(reply)
+def respond(comment_or_submission, reply):
+    reply = comment_or_submission.reply(reply)
 
     try:
         prefix = "tmp"
@@ -171,7 +203,7 @@ def respond(comment, reply):
         fname = f"{reply.id}.log"
         with open(f"{prefix}/{fname}", "w") as logfile:
             logfile.write(reply.body)
-            print(f"Response to comment {comment.id} logged as {fname} in {prefix}/")
+            print(f"Response to item {comment_or_submission.id} logged as {fname} in {prefix}/")
     except Exception as e:
         print(f"Did not log response due to exception:\n{e}")
 
