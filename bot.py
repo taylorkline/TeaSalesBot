@@ -50,7 +50,8 @@ def subscribe(reddit, vendors):
                     continue
 
                 reply = get_reply(reddit, vendors_mentioned)
-                respond(comment, reply)
+                if reply:
+                    respond(comment, reply)
             except praw.exceptions.PRAWException as e:
                 print("Unable to respond to comment {comment.id} due to exception:\n{e}")
 
@@ -88,9 +89,11 @@ def get_reply(reddit, mentions):
     """
     Creates a table with the appropriate vendor & their sales details.
     Also includes footer with bot information.
+    Returns a False-y value if none of the mentioned vendors have active sales.
     """
     rows = ["vendor|sales",
             ":--|:--:"]
+    vendors_without_sales = 0
     for vendor in mentions:
         sales = get_recent_sales(reddit, vendor)
         if sales:
@@ -102,11 +105,14 @@ def get_reply(reddit, mentions):
                     sale_info = f"|{sale_info}"
                 rows.append(sale_info)
         else:
-            sales = f"No unexpired sales posted to /r/{sales_sub} within the past 30 days"
-            rows.append(f"{vendor['pretty_name']}|{sales}")
+            vendors_without_sales += 1
 
+    if vendors_without_sales == len(mentions):
+        return None
+
+    rows = "\n".join(rows)
     footer = "^(TeaSalesBot made with 🍵 and ❤️ by) ^[/u\/taylorkline](/user/taylorkline)"
-    return "\n".join(["\n".join(rows), footer])
+    return "\n".join([rows, footer])
 
 def create_table_safe_reply(reply):
     return "".join([ch if ch != "|" else "-" for ch in reply])
