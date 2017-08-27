@@ -50,7 +50,7 @@ def subscribe(reddit, vendors):
                 continue
 
             if isinstance(item, praw.models.Submission):
-                search_text = f"{item.title} {item.selftext}"
+                search_text = item.title
             else:
                 search_text = item.body
 
