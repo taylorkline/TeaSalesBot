@@ -21,8 +21,8 @@ This bot is written in `python3.6` and [integrated with Travis](https://travis-c
 After adding appropriate credentials to `praw.ini.example` and renaming it to `praw.ini`, the following commands will get you up and running:
 
 ```
-python3.6 -m venv teasales
-source teasales/bin/activate
+python3.6 -m venv teasalesenv
+source teasalesenv/bin/activate
 pip install -r requirements.txt
 python3.6 bot.py
 ```
