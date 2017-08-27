@@ -43,7 +43,7 @@ def subscribe(reddit, vendors):
     stream_idx = 0
     while True:
         for item in streams[stream_idx]:
-            if item is None:
+            if item is None or item.author is None:
                 break
 
             if reddit.config.username == item.author.name:
@@ -83,7 +83,7 @@ def already_responded(comment_or_submission, bot_username):
     """
     if isinstance(comment_or_submission, praw.models.Submission):
         for reply in comment_or_submission.comments:
-            if bot_username == reply.author.name:
+            if reply.author is not None and bot_username == reply.author.name:
                 return True
         return False
 
@@ -92,7 +92,7 @@ def already_responded(comment_or_submission, bot_username):
         ancestor.body
         ancestor.refresh()
         for reply in ancestor.replies:
-            if bot_username == reply.author.name:
+            if reply.author is not None and bot_username == reply.author.name:
                 return True
 
         if ancestor.is_root:
