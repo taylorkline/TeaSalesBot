@@ -141,12 +141,15 @@ def create_search_term(keyword):
 def respond(comment, reply):
     reply = comment.reply(reply)
 
-    prefix = "tmp"
-    os.makedirs(f"{prefix}", exist_ok=True)
-    fname = f"{reply.id}.log"
-    with open(f"{prefix}/{fname}", "w") as logfile:
-        logfile.write(reply.body)
-        print(f"Response to comment {comment.id} logged as {fname} in {prefix}/")
+    try:
+        prefix = "tmp"
+        os.makedirs(f"{prefix}", exist_ok=True)
+        fname = f"{reply.id}.log"
+        with open(f"{prefix}/{fname}", "w") as logfile:
+            logfile.write(reply.body)
+            print(f"Response to comment {comment.id} logged as {fname} in {prefix}/")
+    except Exception as e:
+        print(f"Did not log response due to exception:\n{e}")
 
 if __name__ == "__main__":
     main()
