@@ -133,7 +133,7 @@ def get_recent_sales(reddit, vendor):
     query = " ".join([query, terms])
     sales = reddit.subreddit(sales_sub).search(query, sort="new", time_filter="month")
 
-    return sales
+    return [sale for sale in sales]
 
 def create_search_term(keyword):
     return f'selftext:"{keyword}" OR title:"{keyword}"'
