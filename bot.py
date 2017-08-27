@@ -5,7 +5,7 @@ import os
 # The subreddit that contains the sales
 sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
-monitor_sub = "teasalesbot"
+monitor_sub = "tea"
 
 def main():
     reddit = authenticate()
