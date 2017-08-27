@@ -4,9 +4,9 @@
 Tea Sales Bot
 =============
 
-The code for [/u/TeaSalesBot](https://www.reddit.com/user/TeaSalesBot) which responds to users of /r/tea who mention a vendor who has had recent sales posted to /r/TeaSales.
+The code for [/u/TeaSalesBot](https://www.reddit.com/user/TeaSalesBot) which responds to users of [/r/tea](https://www.reddit.com/r/tea) who mention a vendor who has had recent sales posted to [/r/TeaSales](https://www.reddit.com/r/TeaSales).
 
-This bot is ran by [/u/taylorkline](https://www.reddit.com/user/taylorkline/).
+This bot is ran by [/u/taylorkline](https://www.reddit.com/user/taylorkline/). View its announcement post [here](https://www.reddit.com/r/tea/comments/6w9l5d/introducing_teasalesbot/).
 
 Contributing
 ------------
