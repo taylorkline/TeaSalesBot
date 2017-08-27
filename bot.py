@@ -44,7 +44,6 @@ def subscribe(reddit, vendors):
     while True:
         for item in streams[stream_idx]:
             if item is None:
-                print("Breaking")
                 break
 
             if reddit.config.username == item.author.name:
@@ -54,8 +53,6 @@ def subscribe(reddit, vendors):
                 search_text = f"{item.title} {item.selftext}"
             else:
                 search_text = item.body
-
-            print(search_text)
 
             vendors_mentioned = get_vendors_mentioned(search_text, vendors)
 
