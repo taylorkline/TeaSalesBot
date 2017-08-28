@@ -1,17 +1,31 @@
 import json
+import logging
 import praw
 import os
-import traceback
 
 # The subreddit that contains the sales
 sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
 monitor_sub = "tea"
 
+logger = logging.getLogger(__name__)
+
 def main():
+    init_logging()
     reddit = authenticate()
+    logger.debug(f"Authenticated as {reddit.config.username}")
     vendors = load_vendors()
+    logger.debug(f"Loaded {len(vendors)} vendors")
     subscribe(reddit, vendors)
+
+def init_logging():
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler("bot.log")
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s: %(asctime)s - %(message)s")
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
 
 def authenticate():
     return praw.Reddit("teasalesbot")
@@ -42,6 +56,7 @@ def subscribe(reddit, vendors):
 
     stream_idx = 0
     while True:
+        logger.debug(f"Checking stream {stream_idx}")
         for item in streams[stream_idx]:
             if item is None or item.author is None:
                 break
@@ -57,10 +72,12 @@ def subscribe(reddit, vendors):
             vendors_mentioned = get_vendors_mentioned(search_text, vendors)
 
             if vendors_mentioned:
+                logger.info(f"{item.id}: Vendors {[v['pretty_name'] for v in vendors_mentioned]} found in text: {search_text}")
                 try:
                     # Ensure we don't follow-up duplicate times
                     old_id = item.id
                     if already_responded(item, reddit.config.username):
+                        logger.debug(f"{item.id}: Already responded to item or its parent")
                         continue
                     assert(old_id == item.id)
 
@@ -70,9 +87,7 @@ def subscribe(reddit, vendors):
                 except (praw.exceptions.PRAWException, AssertionError) as e:
                     # TODO: Remove AssertionError catch after resolution of
                     #       https://github.com/praw-dev/praw/issues/838
-                    print(f"Unable to respond to item {item.id} due to exception:")
-                    print(e)
-                    traceback.print_exc()
+                    logger.exception(f"{item.id}: Unable to respond to item")
 
         stream_idx = (stream_idx + 1) % len(streams)
 
@@ -164,6 +179,7 @@ def get_reply(reddit, mentions):
         return None
 
     rows = "\n".join(rows)
+    logger.debug(f"Created reply table:\n{rows}")
     footer = "^(TeaSalesBot made with 🍵 and ❤️ by) ^[/u\/taylorkline](/user/taylorkline)"
     return "\n".join([rows, footer])
 
@@ -200,15 +216,20 @@ def create_search_term(keyword):
 def respond(comment_or_submission, reply):
     reply = comment_or_submission.reply(reply)
 
+    if isinstance(comment_or_submission, praw.models.Submission):
+        parent_url = comment_or_submission.url
+    else:
+        parent_url = f"{comment_or_submission.submission.url}{comment_or_submission.id}"
+
     try:
         prefix = "tmp"
         os.makedirs(f"{prefix}", exist_ok=True)
         fname = f"{reply.id}.log"
         with open(f"{prefix}/{fname}", "w") as logfile:
             logfile.write(reply.body)
-            print(f"Response to item {comment_or_submission.id} logged as {fname} in {prefix}/")
+            logger.debug(f"Response to item {parent_url} logged as {fname} in {prefix}/")
     except Exception as e:
-        print(f"Did not log response due to exception:\n{e}")
+        logger.exception(f"Was not able to log response to {parent_url}")
 
 if __name__ == "__main__":
     main()
