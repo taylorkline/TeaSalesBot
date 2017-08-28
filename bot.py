@@ -90,7 +90,13 @@ def already_responded(comment_or_submission, bot_username):
     ancestor = comment_or_submission
     while True:
         ancestor.body
+
+        # TODO: Remove this workaround for praw >= 5.0.2
+        old_id = ancestor.id
         ancestor.refresh()
+        if old_id != ancestor.id:
+            ancestor.refresh()
+        assert(old_id == ancestor.id)
         for reply in ancestor.replies:
             if reply.author is not None and bot_username == reply.author.name:
                 return True
