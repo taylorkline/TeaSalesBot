@@ -26,3 +26,7 @@ source teasalesenv/bin/activate
 pip install -r requirements.txt
 python3.6 bot.py
 ```
+
+To run the bot continuously through errors and reboots, add this entry to the `crontab` via `crontab -e`:
+
+`@reboot /path/to/bot/run_continously.sh >> /path/to/bot/run.log 2>&1`
