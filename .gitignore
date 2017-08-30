@@ -7,3 +7,4 @@ praw.ini
 __pycache__/
 tmp/
 bot.log
+run.log
