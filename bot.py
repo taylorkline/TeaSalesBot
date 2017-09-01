@@ -63,7 +63,6 @@ def subscribe(reddit, vendors, vendor_names):
 
     stream_idx = 0
     while True:
-        logger.debug(f"Checking stream {stream_idx}")
         for item in streams[stream_idx]:
             if item is None or item.author is None:
                 break
