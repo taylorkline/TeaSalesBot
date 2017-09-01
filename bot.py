@@ -102,9 +102,7 @@ def subscribe(reddit, vendors, vendor_names):
                     reply = get_reply(reddit, vendors_mentioned)
                     if reply:
                         respond(item, reply)
-                except (praw.exceptions.PRAWException, AssertionError) as e:
-                    # TODO: Remove AssertionError catch after resolution of
-                    #       https://github.com/praw-dev/praw/issues/838
+                except praw.exceptions.PRAWException as e:
                     logger.exception(f"{item.id}: Unable to respond to item")
 
         stream_idx = (stream_idx + 1) % len(streams)
@@ -124,12 +122,7 @@ def already_responded(comment_or_submission, bot_username):
     while True:
         ancestor.body
 
-        # TODO: Remove this workaround for praw >= 5.0.2
-        old_id = ancestor.id
         ancestor.refresh()
-        if old_id != ancestor.id:
-            ancestor.refresh()
-        assert(old_id == ancestor.id)
         for reply in ancestor.replies:
             if reply.author is not None and bot_username == reply.author.name:
                 return True
