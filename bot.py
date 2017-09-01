@@ -9,6 +9,8 @@ sales_sub = "teasales"
 # The subreddit to look for mentions & follow-up with replies
 monitor_sub = "tea"
 
+excluded_flair = set(["Discussion", "Article", "Reference", "Marketing Monday", "Meta"])
+
 logger = logging.getLogger(__name__)
 
 def main():
@@ -66,8 +68,15 @@ def subscribe(reddit, vendors):
                 continue
 
             if isinstance(item, praw.models.Submission):
+                if item.link_flair_text in excluded_flair:
+                    logger.info(f"{item.id}: Not considering due to excluded flair '{item.link_flair_text}'")
+                    continue
                 search_text = item.title
             else:
+                submission = item.submission
+                if submission.link_flair_text in excluded_flair:
+                    logger.info(f"{item.id}: Not considering due to excluded flair for submission '{submission.link_flair_text}'")
+                    continue
                 search_text = item.body
 
             vendors_mentioned = get_vendors_mentioned(search_text, vendors)
