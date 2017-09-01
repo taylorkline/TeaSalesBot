@@ -18,6 +18,7 @@ def main():
     reddit = authenticate()
     logger.debug(f"Authenticated as {reddit.config.username}")
     vendors = load_vendors()
+    vendor_names = get_names_only(vendors)
     logger.debug(f"Loaded {len(vendors)} vendors")
     subscribe(reddit, vendors)
 
@@ -52,7 +53,10 @@ def load_vendors():
 
     return vendors
 
-def subscribe(reddit, vendors):
+def get_names_only(vendors):
+    return set([v["reddit_username"] for v in vendors if "reddit_username" in v])
+
+def subscribe(reddit, vendors, vendor_names):
     sub = reddit.subreddit(monitor_sub)
     streams = [sub.stream.submissions(pause_after=0),
                sub.stream.comments(pause_after=0)]
@@ -65,6 +69,10 @@ def subscribe(reddit, vendors):
                 break
 
             if reddit.config.username == item.author.name:
+                continue
+
+            if item.author.name.lower() in vendor_names:
+                logger.info(f"{item.id}: Not considering since author is a vendor: /u/{item.author.name}")
                 continue
 
             if isinstance(item, praw.models.Submission):
