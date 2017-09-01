@@ -2,6 +2,7 @@ import json
 import logging
 import praw
 import os
+import time
 
 # The subreddit that contains the sales
 sales_sub = "teasales"
@@ -214,22 +215,38 @@ def create_search_term(keyword):
     return f'selftext:"{keyword}" OR title:"{keyword}"'
 
 def respond(comment_or_submission, reply):
-    reply = comment_or_submission.reply(reply)
+    replied = False
+    for _ in range(20):
+        try:
+            reply = comment_or_submission.reply(reply)
 
-    if isinstance(comment_or_submission, praw.models.Submission):
-        parent_url = comment_or_submission.url
-    else:
-        parent_url = f"{comment_or_submission.submission.url}{comment_or_submission.id}"
+            if isinstance(comment_or_submission, praw.models.Submission):
+                parent_url = comment_or_submission.url
+            else:
+                parent_url = f"{comment_or_submission.submission.url}{comment_or_submission.id}"
 
-    try:
-        prefix = "tmp"
-        os.makedirs(f"{prefix}", exist_ok=True)
-        fname = f"{reply.id}.log"
-        with open(f"{prefix}/{fname}", "w") as logfile:
-            logfile.write(reply.body)
-            logger.debug(f"Response to item {parent_url} logged as {fname} in {prefix}/")
-    except Exception as e:
-        logger.exception(f"Was not able to log response to {parent_url}")
+            replied = True
+            break
+        except praw.exceptions.APIException as e:
+            if not e.error_type == "RATELIMIT":
+                raise e
+
+            sleep_time_min = 2
+            logger.warning(f"Waiting {sleep_time_min} minutes to respond due to error: {e.message}")
+            time.sleep(sleep_time_min * 60)
+            continue
+
+    # Log the response
+    if replied:
+        try:
+            prefix = "tmp"
+            os.makedirs(f"{prefix}", exist_ok=True)
+            fname = f"{reply.id}.log"
+            with open(f"{prefix}/{fname}", "w") as logfile:
+                logfile.write(reply.body)
+                logger.debug(f"Response to item {parent_url} logged as {fname} in {prefix}/")
+        except Exception as e:
+            logger.exception(f"Was not able to log response to {parent_url}")
 
 if __name__ == "__main__":
     main()
