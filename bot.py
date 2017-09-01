@@ -20,7 +20,7 @@ def main():
     vendors = load_vendors()
     vendor_names = get_names_only(vendors)
     logger.debug(f"Loaded {len(vendors)} vendors")
-    subscribe(reddit, vendors)
+    subscribe(reddit, vendors, vendor_names)
 
 def init_logging():
     logger.setLevel(logging.DEBUG)
